@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<meta charset="UTF-8">
+	<title>Basic Calendar - jQuery EasyUI Demo</title>
+	<link rel="stylesheet" type="text/css" href="themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="themes/icon.css">
+	
+	<script type="text/javascript" src="jquery.min.js"></script>
+	<script type="text/javascript" src="jquery.easyui.min.js"></script>
+	<script type="text/javascript">
+	function fmtimg(value,row,index)
+	{
+		return "<img height='100px' src='"+value+"'>";
+	}
+	
+	</script>
+</head>
+<body>
+<div class="easyui-layout" style="width:100%;height:350px">
+		<div data-options="region:'north'" style="height:50px"></div>
+		
+		<div data-options="region:'center',title:'Main Title',iconCls:'icon-ok'">
+			<table class="easyui-datagrid"
+					data-options="url:'/books/book',method:'get',border:false,singleSelect:true,fit:true,fitColumns:true">
+				<thead>
+					<tr>
+						<th data-options="field:'id'" > ID</th>
+						<th data-options="field:'bookname'" >书名</th>
+						<th data-options="field:'bookpress'" >出版社</th>
+						<th data-options="field:'pressdate'" >出版时间</th>
+						<th data-options="field:'bookauthor'" >作者</th>
+						<th data-options="field:'bookcount'" >数量</th>
+						<th data-options="field:'bookimage' ,width:100,align:'center',formatter:fmtimg" >图片</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

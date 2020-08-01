@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+input
+{
+width:200px;
+}
+</style>
+<meta charset="UTF-8">
+	<title>Basic Calendar - jQuery EasyUI Demo</title>
+	<link rel="stylesheet" type="text/css" href="themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="themes/icon.css">
+	
+	<script type="text/javascript" src="jquery.min.js"></script>
+	<script type="text/javascript" src="jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript">
+	function fmtimg(value,row,index)
+	{
+		return "<img height='100px' src='"+value+"'>";
+	}
+	
+	function fmtDate(date)
+	{
+		var y=date.getFullYear();
+		var m=date.getMonth()+1;
+		var d=date.getDate();
+		return y+"-"+m+"-"+d;
+	}
+	function query()
+	{
+		$('#se').datagrid('load',{
+		name:$("#name").textbox("getValue"),
+		press:$("#press").textbox("getValue"),	
+		date:$("#date").textbox("getValue"),
+		})
+		
+	}
+	function fmtch(value,row,index)
+	{
+		return "<button  onclick='change("+index+")'>修改</button>";
+	}
+	function change(index)
+	{    var rows=$('#se').datagrid("getRows");
+		$('#dd').dialog('open');
+		
+		$('#ff').form('load',rows[index]);
+		
+	}
+	function save()
+	{
+		$('#ff').form('submit',{
+			url:"../save",
+			success:res=>{
+				alert(res);
+				$('#dd').dialog('close');
+				$('#se').datagrid('reload');
+			}
+		})
+	}
+	</script>
+</head>
+<body>
+<div class="easyui-layout" style="width:100%;height:700px">
+
+		<div data-options="region:'north'" style="height:50px">
+		<input class="easyui-textbox" id="name" label="书名" id="name" style="width:200px">
+		<input class="easyui-textbox" id="press" label="出版社" id="press" style="width:200px">
+		<input class="easyui-datebox" id="date" label="出版时间" id="date" style="width:200px"
+		data-options="formatter:fmtDate">
+		<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="query()">查询</a>
+		</div>
+		<div data-options="region:'center',title:'Main Title',iconCls:'icon-ok'">
+			<table class="easyui-datagrid" id="se"
+			
+					data-options="url:'/books/book',method:'get',border:false,singleSelect:true,fit:true,fitColumns:true">
+				<thead>
+					<tr>
+						<th data-options="field:'id',width:100" > ID</th>
+						<th data-options="field:'bookname',width:100" >书名</th>
+						<th data-options="field:'bookpress',width:100" >出版社</th>
+						<th data-options="field:'pressdate',width:100" >出版时间</th>
+						<th data-options="field:'bookauthor',width:100" >作者</th>
+						<th data-options="field:'bookcount',width:100" >数量</th>
+						<th data-options="field:'bookimage' ,width:100,align:'center',formatter:fmtimg" >图片</th>
+						<th data-options="field:'idd',width:100,formatter:fmtch,align:'center'"  > ID</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+	</div>
+	<div id="dd" class="easyui-dialog" title="My Dialog" style="width:400px;height:400px;"
+    data-options="iconCls:'icon-save',resizable:true,modal:true,closed:true,buttons:'#dudu'">
+    <form action="#" id="ff">
+    <input class="easyui-textbox" name="id" label="编号"><br>
+    <input class="easyui-textbox" name="bookname" label="书名"><br>
+    <input class="easyui-combobox" name="bookpress" 
+    url="../getpress"
+    ValueField="bookpress"
+    TextField="bookpress"
+    label="出版社"><br>
+    <input class="easyui-textbox" name="pressdate" label="出版日期"><br>
+    <input class="easyui-textbox" name="bookauthor" label="作者"><br>
+    <input class="easyui-textbox" name="bookcount" label="库存"><br>
+    <input class="easyui-textbox" name="bookimage" label="图片"><br>
+    </form>
+</div>
+<div id="dudu">
+<a href='#' class="easyui-linkbutton" onclick="save()">修改</a>
+<a href='#' class="easyui-linkbutton">保存</a>
+</div>
+</body>
+</html>

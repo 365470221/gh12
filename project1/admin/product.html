@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>商品管理</title>
+<link rel="stylesheet" type="text/css"
+	href="easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
+<script type="text/javascript" src="easyui/jquery.min.js"></script>
+<script type="text/javascript" src="easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../axios.min.js"></script>
+
+<script type="text/javascript" src="easyui/locale/easyui-lang-zh_CN.js"></script>
+<style type="text/css">
+input {
+	width: 200px
+}
+</style>
+<script type="text/javascript">
+	function fmtimg(value,row,index)
+	{
+		return "<img height='100px' src='../"+value+"'>";
+	}
+	
+	function fmtDate(date)
+	{
+		var y=date.getFullYear();
+		var m=date.getMonth()+1;
+		var d=date.getDate();
+		return y+"-"+m+"-"+d;
+	}
+	function query()
+	{
+		$('#se').datagrid('load',{
+		pname:$("#pname").textbox("getValue"),
+		cid:$("#cid").combobox("getValue"),	
+		//isHot:$("#isHot").checkbox("getValue"),
+		})
+		
+	}
+	function fmtch(value,row,index)
+	{
+		return "<button  onclick='change("+index+")'>修改</button>";
+	}
+	function change(index)
+	{    
+		$('#dd').dialog('open');
+		if(index!=undefined){
+		var rows=$('#se').datagrid("getRows");
+		rows[index].isHot=rows[index].is_hot;
+		rows[index].marketPrice=rows[index].market_price;
+		rows[index].shopPrice=rows[index].shop_price;
+		upimage.src="../"+rows[index].image;
+		$('#ff').form('load',rows[index]);
+		}else
+			{
+			$('#ff').form('clear');
+			}
+	}
+	function save()
+	{
+		$('#ff').form('submit',{
+			url:"../product",
+			onSubmit:function(param)
+				{
+					param.op="save";
+				},
+				
+			success:res=>{
+				res=JSON.parse(res);
+				alert(res.msg);
+				if(res.code==1){
+				$('#dd').dialog('close');
+				$('#se').datagrid('reload');
+				}
+			}
+		})
+	}
+	function upload(newValue,oldValue)
+	{
+		var url="../upload";
+		var  fd=new FormData(ff);
+		axios.post(url,fd).then(res=>{
+			alert(res.data.msg);
+			if(res.data.code)
+				{
+				
+				upimage.src="../"+res.data.data;
+				$("#tbimg").textbox('setValue',res.data.data);
+				}
+		})
+	}
+	</script>
+<div class="easyui-layout" style="width:100%;height:700px">
+
+		<div data-options="region:'north'" style="height:50px">
+		<input class="easyui-textbox"  label="名称" id="pname" style="width:200px">
+		<input class="easyui-combobox"  label="分类" id="cid" style="width:200px"
+		   data-options="url:'../category?op=query',valueField:'id', textField:'cname'">
+		<input class="easyui-checkbox"  label="热卖" id="isHot" style="width:200px"
+		value=1>
+		<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-search'" onclick="query()">查询</a>
+		<a id="btn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-add'" onclick="change()">添加</a>
+		</div>
+		<div data-options="region:'center',title:'Main Title',iconCls:'icon-ok'">
+			<table class="easyui-datagrid" id="se"
+			
+					data-options="url:'../product?op=query1',method:'get',border:false,singleSelect:true,fit:true,fitColumns:true,pagination:true">
+				<thead>
+					<tr>
+						<th data-options="field:'id',width:100" > ID</th>
+						<th data-options="field:'pname',width:100" >名称</th>
+						<th data-options="field:'shop_price',width:100" >价格</th>
+						<th data-options="field:'cname',width:100" >分类</th>
+						<th data-options="field:'is_hot',width:100" >热卖</th>
+						<th data-options="field:'createtime',width:100" >上架日期</th>
+						<th data-options="field:'image' ,width:100,align:'center',formatter:fmtimg" >图片</th>
+						<th data-options="field:'idd',width:100,formatter:fmtch,align:'center'"  > 操作</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+	</div>
+	<div id="dd" class="easyui-dialog" title="My Dialog" style="width:400px;height:400px;"
+    data-options="iconCls:'icon-save',resizable:true,modal:true,closed:true,buttons:'#dudu'">
+    <form action="#" id="ff">
+    <input class="easyui-textbox" name="id" label="编号"><br>
+    <input class="easyui-textbox" name="pname" label="名称"><br>
+    <input class="easyui-combobox" name="cid" 
+    data-options="url:'../category?op=query',valueField:'id', textField:'cname'"
+    label="分类"><br>
+    <input class="easyui-numberbox" name="marketPrice" label="市场价"><br>
+    <input class="easyui-numberbox" name="shopPrice" label="商城价"><br>
+    <input class="easyui-textbox" name="pdesc" label="描述"><br>
+    <input class="easyui-textbox" name="isHot" label="热卖"><br>
+    <input class="easyui-textbox" name="image" label="图片" id="tbimg"><br>
+    <input class="easyui-filebox" label="选择"  id="file" name="file"
+    data-options="onChange:upload"><br>
+    <img alt="" src="../products/1/cs10001.jpg" height="100px" id="upimage"><br>
+    </form>
+</div>
+<div id="dudu">
+<a href='#' class="easyui-linkbutton" onclick="save()">修改</a>
+<a href='#' class="easyui-linkbutton">保存</a>
+</div>
+</body>
+</html>
